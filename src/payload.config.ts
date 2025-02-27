@@ -73,7 +73,7 @@ export default buildConfig({
     vercelBlobStorage({
       collections: {
         [Media.slug]: {
-          prefix: 'media',
+          prefix: 'media-postgres-',
         },
       },
       cacheControlMaxAge: 60 * 60 * 24 * 365,
