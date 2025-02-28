@@ -1,5 +1,5 @@
 {
-  "id": "7066b02e-745d-49dc-8b37-af97fcd9dddd",
+  "id": "f02e42c0-334f-4faa-a57d-d7e5a5837641",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1102,7 +1102,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "title": {
           "name": "title",
@@ -1536,7 +1536,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "link_type": {
           "name": "link_type",
@@ -1653,7 +1653,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "link_type": {
           "name": "link_type",
@@ -1776,7 +1776,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "rich_text": {
           "name": "rich_text",
@@ -1886,7 +1886,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "size": {
           "name": "size",
@@ -2029,7 +2029,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "_uuid": {
           "name": "_uuid",
@@ -2139,7 +2139,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "media_id": {
           "name": "media_id",
@@ -2283,7 +2283,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "intro_content": {
           "name": "intro_content",
@@ -2422,7 +2422,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "form_id": {
           "name": "form_id",
@@ -2578,7 +2578,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "guidelines": {
           "name": "guidelines",
@@ -2676,7 +2676,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "parent_id": {
           "name": "parent_id",
@@ -3298,7 +3298,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "title": {
           "name": "title",
@@ -3724,7 +3724,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "_uuid": {
           "name": "_uuid",
@@ -3801,7 +3801,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "parent_id": {
           "name": "parent_id",
@@ -4333,7 +4333,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "alt": {
           "name": "alt",
@@ -4964,7 +4964,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "title": {
           "name": "title",
@@ -5098,7 +5098,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "name": {
           "name": "name",
@@ -5227,7 +5227,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "author_name": {
           "name": "author_name",
@@ -5345,7 +5345,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "from": {
           "name": "from",
@@ -6972,7 +6972,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "title": {
           "name": "title",
@@ -7157,7 +7157,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "form_id": {
           "name": "form_id",
@@ -7345,7 +7345,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "title": {
           "name": "title",
@@ -7747,7 +7747,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "input": {
           "name": "input",
@@ -7976,7 +7976,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "global_slug": {
           "name": "global_slug",
@@ -8533,7 +8533,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "key": {
           "name": "key",
@@ -8756,7 +8756,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "name": {
           "name": "name",
@@ -8935,7 +8935,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "updated_at": {
           "name": "updated_at",
@@ -9234,7 +9234,7 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "uuid_generate_v7()"
         },
         "updated_at": {
           "name": "updated_at",

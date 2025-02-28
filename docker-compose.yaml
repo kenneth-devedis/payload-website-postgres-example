@@ -1,0 +1,15 @@
+version: '3'
+services:
+  db:
+    build:
+      context: .
+      dockerfile: db/Dockerfile
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: payload
+      POSTGRES_PASSWORD: payload
+      POSTGRES_DB: payload
+    restart: unless-stopped
+    volumes:
+      - ./db/scripts:/docker-entrypoint-initdb.d

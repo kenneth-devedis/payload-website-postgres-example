@@ -19,6 +19,7 @@ import { getServerSideURL } from './utilities/getURL'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { testimonials } from '@/testimonial/collections'
 import { varchar } from '@payloadcms/db-postgres/drizzle/pg-core'
+import { sql } from '@payloadcms/db-postgres/drizzle'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -64,7 +65,7 @@ export default buildConfig({
   editor: defaultLexical,
   db: postgresAdapter({
     idType: 'uuid',
-
+    logger: true,
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
@@ -76,6 +77,15 @@ export default buildConfig({
           name: 'prefix',
           type: 'varchar',
         }
+        const allTables = Object.values(adapter.rawTables)
+        allTables.forEach(table => {
+          const idColumn = table.columns.id
+          if (!idColumn || idColumn.type !== 'uuid') return
+          table.columns.id = {
+            ...idColumn,
+            default: sql`uuid_generate_v7()`
+          }
+        })
         return schema
       }
     ],
