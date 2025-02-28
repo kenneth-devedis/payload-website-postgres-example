@@ -65,7 +65,6 @@ export default buildConfig({
   editor: defaultLexical,
   db: postgresAdapter({
     idType: 'uuid',
-    logger: true,
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
