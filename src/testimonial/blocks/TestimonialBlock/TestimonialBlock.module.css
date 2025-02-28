@@ -1,0 +1,20 @@
+.quoted {
+  position: relative;
+}
+
+.quoted::before {
+  content: '“';
+  position: absolute;
+  font-size: 5rem;
+  top: -0.25rem;
+  left: -2.25rem;
+}
+
+
+.quoted::after {
+  content: '”';
+  position: absolute;
+  font-size: 5rem;
+  bottom: -3.5rem;
+  right: -2rem;
+}

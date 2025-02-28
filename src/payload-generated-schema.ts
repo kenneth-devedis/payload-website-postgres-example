@@ -12,13 +12,14 @@ import {
   uniqueIndex,
   foreignKey,
   integer,
+  uuid,
   varchar,
   boolean,
   text,
   jsonb,
   numeric,
-  serial,
   timestamp,
+  serial,
   type AnyPgColumn,
   pgEnum,
 } from '@payloadcms/db-postgres/drizzle/pg-core'
@@ -147,7 +148,7 @@ export const pages_hero_links = pgTable(
   'pages_hero_links',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     link_type: enum_pages_hero_links_link_type('link_type').default('reference'),
     link_newTab: boolean('link_new_tab'),
@@ -194,7 +195,7 @@ export const pages_blocks_cta = pgTable(
   'pages_blocks_cta',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     richText: jsonb('rich_text'),
@@ -243,7 +244,7 @@ export const pages_blocks_content = pgTable(
   'pages_blocks_content',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     blockName: varchar('block_name'),
@@ -264,10 +265,10 @@ export const pages_blocks_media_block = pgTable(
   'pages_blocks_media_block',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
-    media: integer('media_id').references(() => media.id, {
+    media: uuid('media_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     blockName: varchar('block_name'),
@@ -291,7 +292,7 @@ export const pages_blocks_archive = pgTable(
   'pages_blocks_archive',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     introContent: jsonb('intro_content'),
@@ -316,10 +317,10 @@ export const pages_blocks_form_block = pgTable(
   'pages_blocks_form_block',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
-    form: integer('form_id').references(() => forms.id, {
+    form: uuid('form_id').references(() => forms.id, {
       onDelete: 'set null',
     }),
     enableIntro: boolean('enable_intro'),
@@ -339,18 +340,40 @@ export const pages_blocks_form_block = pgTable(
   }),
 )
 
+export const pages_blocks_testimonial_block = pgTable(
+  'pages_blocks_testimonial_block',
+  {
+    _order: integer('_order').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
+    _path: text('_path').notNull(),
+    id: varchar('id').primaryKey(),
+    guidelines: boolean('guidelines'),
+    blockName: varchar('block_name'),
+  },
+  (columns) => ({
+    _orderIdx: index('pages_blocks_testimonial_block_order_idx').on(columns._order),
+    _parentIDIdx: index('pages_blocks_testimonial_block_parent_id_idx').on(columns._parentID),
+    _pathIdx: index('pages_blocks_testimonial_block_path_idx').on(columns._path),
+    _parentIdFk: foreignKey({
+      columns: [columns['_parentID']],
+      foreignColumns: [pages.id],
+      name: 'pages_blocks_testimonial_block_parent_id_fk',
+    }).onDelete('cascade'),
+  }),
+)
+
 export const pages = pgTable(
   'pages',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title'),
     hero_type: enum_pages_hero_type('hero_type').default('lowImpact'),
     hero_richText: jsonb('hero_rich_text'),
-    hero_media: integer('hero_media_id').references(() => media.id, {
+    hero_media: uuid('hero_media_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     meta_title: varchar('meta_title'),
-    meta_image: integer('meta_image_id').references(() => media.id, {
+    meta_image: uuid('meta_image_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     meta_description: varchar('meta_description'),
@@ -380,11 +403,11 @@ export const pages_rels = pgTable(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    pagesID: integer('pages_id'),
-    postsID: integer('posts_id'),
-    categoriesID: integer('categories_id'),
+    pagesID: uuid('pages_id'),
+    postsID: uuid('posts_id'),
+    categoriesID: uuid('categories_id'),
   },
   (columns) => ({
     order: index('pages_rels_order_idx').on(columns.order),
@@ -420,8 +443,8 @@ export const _pages_v_version_hero_links = pgTable(
   '_pages_v_version_hero_links',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    id: serial('id').primaryKey(),
+    _parentID: uuid('_parent_id').notNull(),
+    id: uuid('id').defaultRandom().primaryKey(),
     link_type: enum__pages_v_version_hero_links_link_type('link_type').default('reference'),
     link_newTab: boolean('link_new_tab'),
     link_url: varchar('link_url'),
@@ -445,8 +468,8 @@ export const _pages_v_blocks_cta_links = pgTable(
   '_pages_v_blocks_cta_links',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    id: serial('id').primaryKey(),
+    _parentID: uuid('_parent_id').notNull(),
+    id: uuid('id').defaultRandom().primaryKey(),
     link_type: enum__pages_v_blocks_cta_links_link_type('link_type').default('reference'),
     link_newTab: boolean('link_new_tab'),
     link_url: varchar('link_url'),
@@ -470,9 +493,9 @@ export const _pages_v_blocks_cta = pgTable(
   '_pages_v_blocks_cta',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     richText: jsonb('rich_text'),
     _uuid: varchar('_uuid'),
     blockName: varchar('block_name'),
@@ -493,8 +516,8 @@ export const _pages_v_blocks_content_columns = pgTable(
   '_pages_v_blocks_content_columns',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    id: serial('id').primaryKey(),
+    _parentID: uuid('_parent_id').notNull(),
+    id: uuid('id').defaultRandom().primaryKey(),
     size: enum__pages_v_blocks_content_columns_size('size').default('oneThird'),
     richText: jsonb('rich_text'),
     enableLink: boolean('enable_link'),
@@ -521,9 +544,9 @@ export const _pages_v_blocks_content = pgTable(
   '_pages_v_blocks_content',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     _uuid: varchar('_uuid'),
     blockName: varchar('block_name'),
   },
@@ -543,10 +566,10 @@ export const _pages_v_blocks_media_block = pgTable(
   '_pages_v_blocks_media_block',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
-    id: serial('id').primaryKey(),
-    media: integer('media_id').references(() => media.id, {
+    id: uuid('id').defaultRandom().primaryKey(),
+    media: uuid('media_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     _uuid: varchar('_uuid'),
@@ -571,9 +594,9 @@ export const _pages_v_blocks_archive = pgTable(
   '_pages_v_blocks_archive',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     introContent: jsonb('intro_content'),
     populateBy: enum__pages_v_blocks_archive_populate_by('populate_by').default('collection'),
     relationTo: enum__pages_v_blocks_archive_relation_to('relation_to').default('posts'),
@@ -597,10 +620,10 @@ export const _pages_v_blocks_form_block = pgTable(
   '_pages_v_blocks_form_block',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
-    id: serial('id').primaryKey(),
-    form: integer('form_id').references(() => forms.id, {
+    id: uuid('id').defaultRandom().primaryKey(),
+    form: uuid('form_id').references(() => forms.id, {
       onDelete: 'set null',
     }),
     enableIntro: boolean('enable_intro'),
@@ -623,21 +646,44 @@ export const _pages_v_blocks_form_block = pgTable(
   }),
 )
 
+export const _pages_v_blocks_testimonial_block = pgTable(
+  '_pages_v_blocks_testimonial_block',
+  {
+    _order: integer('_order').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
+    _path: text('_path').notNull(),
+    id: uuid('id').defaultRandom().primaryKey(),
+    guidelines: boolean('guidelines'),
+    _uuid: varchar('_uuid'),
+    blockName: varchar('block_name'),
+  },
+  (columns) => ({
+    _orderIdx: index('_pages_v_blocks_testimonial_block_order_idx').on(columns._order),
+    _parentIDIdx: index('_pages_v_blocks_testimonial_block_parent_id_idx').on(columns._parentID),
+    _pathIdx: index('_pages_v_blocks_testimonial_block_path_idx').on(columns._path),
+    _parentIdFk: foreignKey({
+      columns: [columns['_parentID']],
+      foreignColumns: [_pages_v.id],
+      name: '_pages_v_blocks_testimonial_block_parent_id_fk',
+    }).onDelete('cascade'),
+  }),
+)
+
 export const _pages_v = pgTable(
   '_pages_v',
   {
-    id: serial('id').primaryKey(),
-    parent: integer('parent_id').references(() => pages.id, {
+    id: uuid('id').defaultRandom().primaryKey(),
+    parent: uuid('parent_id').references(() => pages.id, {
       onDelete: 'set null',
     }),
     version_title: varchar('version_title'),
     version_hero_type: enum__pages_v_version_hero_type('version_hero_type').default('lowImpact'),
     version_hero_richText: jsonb('version_hero_rich_text'),
-    version_hero_media: integer('version_hero_media_id').references(() => media.id, {
+    version_hero_media: uuid('version_hero_media_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     version_meta_title: varchar('version_meta_title'),
-    version_meta_image: integer('version_meta_image_id').references(() => media.id, {
+    version_meta_image: uuid('version_meta_image_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     version_meta_description: varchar('version_meta_description'),
@@ -700,11 +746,11 @@ export const _pages_v_rels = pgTable(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    pagesID: integer('pages_id'),
-    postsID: integer('posts_id'),
-    categoriesID: integer('categories_id'),
+    pagesID: uuid('pages_id'),
+    postsID: uuid('posts_id'),
+    categoriesID: uuid('categories_id'),
   },
   (columns) => ({
     order: index('_pages_v_rels_order_idx').on(columns.order),
@@ -742,7 +788,7 @@ export const posts_populated_authors = pgTable(
   'posts_populated_authors',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     name: varchar('name'),
   },
@@ -760,14 +806,14 @@ export const posts_populated_authors = pgTable(
 export const posts = pgTable(
   'posts',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title'),
-    heroImage: integer('hero_image_id').references(() => media.id, {
+    heroImage: uuid('hero_image_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     content: jsonb('content'),
     meta_title: varchar('meta_title'),
-    meta_image: integer('meta_image_id').references(() => media.id, {
+    meta_image: uuid('meta_image_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     meta_description: varchar('meta_description'),
@@ -797,11 +843,11 @@ export const posts_rels = pgTable(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    postsID: integer('posts_id'),
-    categoriesID: integer('categories_id'),
-    usersID: integer('users_id'),
+    postsID: uuid('posts_id'),
+    categoriesID: uuid('categories_id'),
+    usersID: uuid('users_id'),
   },
   (columns) => ({
     order: index('posts_rels_order_idx').on(columns.order),
@@ -837,8 +883,8 @@ export const _posts_v_version_populated_authors = pgTable(
   '_posts_v_version_populated_authors',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    id: serial('id').primaryKey(),
+    _parentID: uuid('_parent_id').notNull(),
+    id: uuid('id').defaultRandom().primaryKey(),
     _uuid: varchar('_uuid'),
     name: varchar('name'),
   },
@@ -856,17 +902,17 @@ export const _posts_v_version_populated_authors = pgTable(
 export const _posts_v = pgTable(
   '_posts_v',
   {
-    id: serial('id').primaryKey(),
-    parent: integer('parent_id').references(() => posts.id, {
+    id: uuid('id').defaultRandom().primaryKey(),
+    parent: uuid('parent_id').references(() => posts.id, {
       onDelete: 'set null',
     }),
     version_title: varchar('version_title'),
-    version_heroImage: integer('version_hero_image_id').references(() => media.id, {
+    version_heroImage: uuid('version_hero_image_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     version_content: jsonb('version_content'),
     version_meta_title: varchar('version_meta_title'),
-    version_meta_image: integer('version_meta_image_id').references(() => media.id, {
+    version_meta_image: uuid('version_meta_image_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     version_meta_description: varchar('version_meta_description'),
@@ -929,11 +975,11 @@ export const _posts_v_rels = pgTable(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    postsID: integer('posts_id'),
-    categoriesID: integer('categories_id'),
-    usersID: integer('users_id'),
+    postsID: uuid('posts_id'),
+    categoriesID: uuid('categories_id'),
+    usersID: uuid('users_id'),
   },
   (columns) => ({
     order: index('_posts_v_rels_order_idx').on(columns.order),
@@ -970,7 +1016,7 @@ export const _posts_v_rels = pgTable(
 export const media = pgTable(
   'media',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     alt: varchar('alt'),
     caption: jsonb('caption'),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
@@ -1030,6 +1076,7 @@ export const media = pgTable(
     sizes_og_mimeType: varchar('sizes_og_mime_type'),
     sizes_og_filesize: numeric('sizes_og_filesize'),
     sizes_og_filename: varchar('sizes_og_filename'),
+    prefix: varchar('prefix'),
   },
   (columns) => ({
     media_updated_at_idx: index('media_updated_at_idx').on(columns.updatedAt),
@@ -1063,9 +1110,9 @@ export const categories_breadcrumbs = pgTable(
   'categories_breadcrumbs',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
-    doc: integer('doc_id').references(() => categories.id, {
+    doc: uuid('doc_id').references(() => categories.id, {
       onDelete: 'set null',
     }),
     url: varchar('url'),
@@ -1086,11 +1133,11 @@ export const categories_breadcrumbs = pgTable(
 export const categories = pgTable(
   'categories',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title').notNull(),
     slug: varchar('slug'),
     slugLock: boolean('slug_lock').default(true),
-    parent: integer('parent_id').references((): AnyPgColumn => categories.id, {
+    parent: uuid('parent_id').references((): AnyPgColumn => categories.id, {
       onDelete: 'set null',
     }),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
@@ -1111,7 +1158,7 @@ export const categories = pgTable(
 export const users = pgTable(
   'users',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     name: varchar('name'),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
       .defaultNow()
@@ -1138,10 +1185,38 @@ export const users = pgTable(
   }),
 )
 
+export const testimonials = pgTable(
+  'testimonials',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    author_name: varchar('author_name').notNull(),
+    author_description: varchar('author_description'),
+    author_photo: uuid('author_photo_id')
+      .notNull()
+      .references(() => media.id, {
+        onDelete: 'set null',
+      }),
+    quote: varchar('quote').notNull(),
+    updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => ({
+    testimonials_author_author_photo_idx: index('testimonials_author_author_photo_idx').on(
+      columns.author_photo,
+    ),
+    testimonials_updated_at_idx: index('testimonials_updated_at_idx').on(columns.updatedAt),
+    testimonials_created_at_idx: index('testimonials_created_at_idx').on(columns.createdAt),
+  }),
+)
+
 export const redirects = pgTable(
   'redirects',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     from: varchar('from').notNull(),
     to_type: enum_redirects_to_type('to_type').default('reference'),
     to_url: varchar('to_url'),
@@ -1164,10 +1239,10 @@ export const redirects_rels = pgTable(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    pagesID: integer('pages_id'),
-    postsID: integer('posts_id'),
+    pagesID: uuid('pages_id'),
+    postsID: uuid('posts_id'),
   },
   (columns) => ({
     order: index('redirects_rels_order_idx').on(columns.order),
@@ -1197,7 +1272,7 @@ export const forms_blocks_checkbox = pgTable(
   'forms_blocks_checkbox',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     name: varchar('name').notNull(),
@@ -1223,7 +1298,7 @@ export const forms_blocks_country = pgTable(
   'forms_blocks_country',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     name: varchar('name').notNull(),
@@ -1248,7 +1323,7 @@ export const forms_blocks_email = pgTable(
   'forms_blocks_email',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     name: varchar('name').notNull(),
@@ -1273,7 +1348,7 @@ export const forms_blocks_message = pgTable(
   'forms_blocks_message',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     message: jsonb('message'),
@@ -1295,7 +1370,7 @@ export const forms_blocks_number = pgTable(
   'forms_blocks_number',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     name: varchar('name').notNull(),
@@ -1341,7 +1416,7 @@ export const forms_blocks_select = pgTable(
   'forms_blocks_select',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     name: varchar('name').notNull(),
@@ -1367,7 +1442,7 @@ export const forms_blocks_state = pgTable(
   'forms_blocks_state',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     name: varchar('name').notNull(),
@@ -1392,7 +1467,7 @@ export const forms_blocks_text = pgTable(
   'forms_blocks_text',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     name: varchar('name').notNull(),
@@ -1418,7 +1493,7 @@ export const forms_blocks_textarea = pgTable(
   'forms_blocks_textarea',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     _path: text('_path').notNull(),
     id: varchar('id').primaryKey(),
     name: varchar('name').notNull(),
@@ -1444,7 +1519,7 @@ export const forms_emails = pgTable(
   'forms_emails',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     emailTo: varchar('email_to'),
     cc: varchar('cc'),
@@ -1468,7 +1543,7 @@ export const forms_emails = pgTable(
 export const forms = pgTable(
   'forms',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title').notNull(),
     submitButtonLabel: varchar('submit_button_label'),
     confirmationType: enum_forms_confirmation_type('confirmation_type').default('message'),
@@ -1491,7 +1566,7 @@ export const form_submissions_submission_data = pgTable(
   'form_submissions_submission_data',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     field: varchar('field').notNull(),
     value: varchar('value').notNull(),
@@ -1510,8 +1585,8 @@ export const form_submissions_submission_data = pgTable(
 export const form_submissions = pgTable(
   'form_submissions',
   {
-    id: serial('id').primaryKey(),
-    form: integer('form_id')
+    id: uuid('id').defaultRandom().primaryKey(),
+    form: uuid('form_id')
       .notNull()
       .references(() => forms.id, {
         onDelete: 'set null',
@@ -1534,7 +1609,7 @@ export const search_categories = pgTable(
   'search_categories',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     relationTo: varchar('relation_to'),
     title: varchar('title'),
@@ -1553,13 +1628,13 @@ export const search_categories = pgTable(
 export const search = pgTable(
   'search',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     title: varchar('title'),
     priority: numeric('priority'),
     slug: varchar('slug'),
     meta_title: varchar('meta_title'),
     meta_description: varchar('meta_description'),
-    meta_image: integer('meta_image_id').references(() => media.id, {
+    meta_image: uuid('meta_image_id').references(() => media.id, {
       onDelete: 'set null',
     }),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
@@ -1582,9 +1657,9 @@ export const search_rels = pgTable(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    postsID: integer('posts_id'),
+    postsID: uuid('posts_id'),
   },
   (columns) => ({
     order: index('search_rels_order_idx').on(columns.order),
@@ -1608,7 +1683,7 @@ export const payload_jobs_log = pgTable(
   'payload_jobs_log',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     executedAt: timestamp('executed_at', {
       mode: 'string',
@@ -1641,7 +1716,7 @@ export const payload_jobs_log = pgTable(
 export const payload_jobs = pgTable(
   'payload_jobs',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     input: jsonb('input'),
     completedAt: timestamp('completed_at', { mode: 'string', withTimezone: true, precision: 3 }),
     totalTried: numeric('total_tried').default('0'),
@@ -1674,7 +1749,7 @@ export const payload_jobs = pgTable(
 export const payload_locked_documents = pgTable(
   'payload_locked_documents',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     globalSlug: varchar('global_slug'),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
       .defaultNow()
@@ -1701,18 +1776,19 @@ export const payload_locked_documents_rels = pgTable(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    pagesID: integer('pages_id'),
-    postsID: integer('posts_id'),
-    mediaID: integer('media_id'),
-    categoriesID: integer('categories_id'),
-    usersID: integer('users_id'),
-    redirectsID: integer('redirects_id'),
-    formsID: integer('forms_id'),
-    'form-submissionsID': integer('form_submissions_id'),
-    searchID: integer('search_id'),
-    'payload-jobsID': integer('payload_jobs_id'),
+    pagesID: uuid('pages_id'),
+    postsID: uuid('posts_id'),
+    mediaID: uuid('media_id'),
+    categoriesID: uuid('categories_id'),
+    usersID: uuid('users_id'),
+    testimonialsID: uuid('testimonials_id'),
+    redirectsID: uuid('redirects_id'),
+    formsID: uuid('forms_id'),
+    'form-submissionsID': uuid('form_submissions_id'),
+    searchID: uuid('search_id'),
+    'payload-jobsID': uuid('payload_jobs_id'),
   },
   (columns) => ({
     order: index('payload_locked_documents_rels_order_idx').on(columns.order),
@@ -1733,6 +1809,9 @@ export const payload_locked_documents_rels = pgTable(
     payload_locked_documents_rels_users_id_idx: index(
       'payload_locked_documents_rels_users_id_idx',
     ).on(columns.usersID),
+    payload_locked_documents_rels_testimonials_id_idx: index(
+      'payload_locked_documents_rels_testimonials_id_idx',
+    ).on(columns.testimonialsID),
     payload_locked_documents_rels_redirects_id_idx: index(
       'payload_locked_documents_rels_redirects_id_idx',
     ).on(columns.redirectsID),
@@ -1778,6 +1857,11 @@ export const payload_locked_documents_rels = pgTable(
       foreignColumns: [users.id],
       name: 'payload_locked_documents_rels_users_fk',
     }).onDelete('cascade'),
+    testimonialsIdFk: foreignKey({
+      columns: [columns['testimonialsID']],
+      foreignColumns: [testimonials.id],
+      name: 'payload_locked_documents_rels_testimonials_fk',
+    }).onDelete('cascade'),
     redirectsIdFk: foreignKey({
       columns: [columns['redirectsID']],
       foreignColumns: [redirects.id],
@@ -1809,7 +1893,7 @@ export const payload_locked_documents_rels = pgTable(
 export const payload_preferences = pgTable(
   'payload_preferences',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     key: varchar('key'),
     value: jsonb('value'),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
@@ -1835,9 +1919,9 @@ export const payload_preferences_rels = pgTable(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    usersID: integer('users_id'),
+    usersID: uuid('users_id'),
   },
   (columns) => ({
     order: index('payload_preferences_rels_order_idx').on(columns.order),
@@ -1862,7 +1946,7 @@ export const payload_preferences_rels = pgTable(
 export const payload_migrations = pgTable(
   'payload_migrations',
   {
-    id: serial('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     name: varchar('name'),
     batch: numeric('batch'),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
@@ -1886,7 +1970,7 @@ export const header_nav_items = pgTable(
   'header_nav_items',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     link_type: enum_header_nav_items_link_type('link_type').default('reference'),
     link_newTab: boolean('link_new_tab'),
@@ -1905,7 +1989,7 @@ export const header_nav_items = pgTable(
 )
 
 export const header = pgTable('header', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 }),
   createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 }),
 })
@@ -1915,10 +1999,10 @@ export const header_rels = pgTable(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    pagesID: integer('pages_id'),
-    postsID: integer('posts_id'),
+    pagesID: uuid('pages_id'),
+    postsID: uuid('posts_id'),
   },
   (columns) => ({
     order: index('header_rels_order_idx').on(columns.order),
@@ -1948,7 +2032,7 @@ export const footer_nav_items = pgTable(
   'footer_nav_items',
   {
     _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
+    _parentID: uuid('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
     link_type: enum_footer_nav_items_link_type('link_type').default('reference'),
     link_newTab: boolean('link_new_tab'),
@@ -1967,7 +2051,7 @@ export const footer_nav_items = pgTable(
 )
 
 export const footer = pgTable('footer', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 }),
   createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 }),
 })
@@ -1977,10 +2061,10 @@ export const footer_rels = pgTable(
   {
     id: serial('id').primaryKey(),
     order: integer('order'),
-    parent: integer('parent_id').notNull(),
+    parent: uuid('parent_id').notNull(),
     path: varchar('path').notNull(),
-    pagesID: integer('pages_id'),
-    postsID: integer('posts_id'),
+    pagesID: uuid('pages_id'),
+    postsID: uuid('posts_id'),
   },
   (columns) => ({
     order: index('footer_rels_order_idx').on(columns.order),
@@ -2084,6 +2168,16 @@ export const relations_pages_blocks_form_block = relations(pages_blocks_form_blo
     relationName: 'form',
   }),
 }))
+export const relations_pages_blocks_testimonial_block = relations(
+  pages_blocks_testimonial_block,
+  ({ one }) => ({
+    _parentID: one(pages, {
+      fields: [pages_blocks_testimonial_block._parentID],
+      references: [pages.id],
+      relationName: '_blocks_testimonialBlock',
+    }),
+  }),
+)
 export const relations_pages_rels = relations(pages_rels, ({ one }) => ({
   parent: one(pages, {
     fields: [pages_rels.parent],
@@ -2129,6 +2223,9 @@ export const relations_pages = relations(pages, ({ one, many }) => ({
   }),
   _blocks_formBlock: many(pages_blocks_form_block, {
     relationName: '_blocks_formBlock',
+  }),
+  _blocks_testimonialBlock: many(pages_blocks_testimonial_block, {
+    relationName: '_blocks_testimonialBlock',
   }),
   meta_image: one(media, {
     fields: [pages.meta_image],
@@ -2229,6 +2326,16 @@ export const relations__pages_v_blocks_form_block = relations(
     }),
   }),
 )
+export const relations__pages_v_blocks_testimonial_block = relations(
+  _pages_v_blocks_testimonial_block,
+  ({ one }) => ({
+    _parentID: one(_pages_v, {
+      fields: [_pages_v_blocks_testimonial_block._parentID],
+      references: [_pages_v.id],
+      relationName: '_blocks_testimonialBlock',
+    }),
+  }),
+)
 export const relations__pages_v_rels = relations(_pages_v_rels, ({ one }) => ({
   parent: one(_pages_v, {
     fields: [_pages_v_rels.parent],
@@ -2279,6 +2386,9 @@ export const relations__pages_v = relations(_pages_v, ({ one, many }) => ({
   }),
   _blocks_formBlock: many(_pages_v_blocks_form_block, {
     relationName: '_blocks_formBlock',
+  }),
+  _blocks_testimonialBlock: many(_pages_v_blocks_testimonial_block, {
+    relationName: '_blocks_testimonialBlock',
   }),
   version_meta_image: one(media, {
     fields: [_pages_v.version_meta_image],
@@ -2415,6 +2525,13 @@ export const relations_categories = relations(categories, ({ one, many }) => ({
   }),
 }))
 export const relations_users = relations(users, () => ({}))
+export const relations_testimonials = relations(testimonials, ({ one }) => ({
+  author_photo: one(media, {
+    fields: [testimonials.author_photo],
+    references: [media.id],
+    relationName: 'author_photo',
+  }),
+}))
 export const relations_redirects_rels = relations(redirects_rels, ({ one }) => ({
   parent: one(redirects, {
     fields: [redirects_rels.parent],
@@ -2649,6 +2766,11 @@ export const relations_payload_locked_documents_rels = relations(
       references: [users.id],
       relationName: 'users',
     }),
+    testimonialsID: one(testimonials, {
+      fields: [payload_locked_documents_rels.testimonialsID],
+      references: [testimonials.id],
+      relationName: 'testimonials',
+    }),
     redirectsID: one(redirects, {
       fields: [payload_locked_documents_rels.redirectsID],
       references: [redirects.id],
@@ -2810,6 +2932,7 @@ type DatabaseSchema = {
   pages_blocks_media_block: typeof pages_blocks_media_block
   pages_blocks_archive: typeof pages_blocks_archive
   pages_blocks_form_block: typeof pages_blocks_form_block
+  pages_blocks_testimonial_block: typeof pages_blocks_testimonial_block
   pages: typeof pages
   pages_rels: typeof pages_rels
   _pages_v_version_hero_links: typeof _pages_v_version_hero_links
@@ -2820,6 +2943,7 @@ type DatabaseSchema = {
   _pages_v_blocks_media_block: typeof _pages_v_blocks_media_block
   _pages_v_blocks_archive: typeof _pages_v_blocks_archive
   _pages_v_blocks_form_block: typeof _pages_v_blocks_form_block
+  _pages_v_blocks_testimonial_block: typeof _pages_v_blocks_testimonial_block
   _pages_v: typeof _pages_v
   _pages_v_rels: typeof _pages_v_rels
   posts_populated_authors: typeof posts_populated_authors
@@ -2832,6 +2956,7 @@ type DatabaseSchema = {
   categories_breadcrumbs: typeof categories_breadcrumbs
   categories: typeof categories
   users: typeof users
+  testimonials: typeof testimonials
   redirects: typeof redirects
   redirects_rels: typeof redirects_rels
   forms_blocks_checkbox: typeof forms_blocks_checkbox
@@ -2872,6 +2997,7 @@ type DatabaseSchema = {
   relations_pages_blocks_media_block: typeof relations_pages_blocks_media_block
   relations_pages_blocks_archive: typeof relations_pages_blocks_archive
   relations_pages_blocks_form_block: typeof relations_pages_blocks_form_block
+  relations_pages_blocks_testimonial_block: typeof relations_pages_blocks_testimonial_block
   relations_pages_rels: typeof relations_pages_rels
   relations_pages: typeof relations_pages
   relations__pages_v_version_hero_links: typeof relations__pages_v_version_hero_links
@@ -2882,6 +3008,7 @@ type DatabaseSchema = {
   relations__pages_v_blocks_media_block: typeof relations__pages_v_blocks_media_block
   relations__pages_v_blocks_archive: typeof relations__pages_v_blocks_archive
   relations__pages_v_blocks_form_block: typeof relations__pages_v_blocks_form_block
+  relations__pages_v_blocks_testimonial_block: typeof relations__pages_v_blocks_testimonial_block
   relations__pages_v_rels: typeof relations__pages_v_rels
   relations__pages_v: typeof relations__pages_v
   relations_posts_populated_authors: typeof relations_posts_populated_authors
@@ -2894,6 +3021,7 @@ type DatabaseSchema = {
   relations_categories_breadcrumbs: typeof relations_categories_breadcrumbs
   relations_categories: typeof relations_categories
   relations_users: typeof relations_users
+  relations_testimonials: typeof relations_testimonials
   relations_redirects_rels: typeof relations_redirects_rels
   relations_redirects: typeof relations_redirects
   relations_forms_blocks_checkbox: typeof relations_forms_blocks_checkbox

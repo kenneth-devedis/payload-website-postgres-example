@@ -17,6 +17,8 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { testimonials } from '@/testimonial/collections'
+import { varchar } from '@payloadcms/db-postgres/drizzle/pg-core'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -61,11 +63,35 @@ export default buildConfig({
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: postgresAdapter({
+    idType: 'uuid',
+
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
+    beforeSchemaInit: [
+      ({schema, adapter}) => {
+        const mediaTable = adapter.rawTables.media
+        if (!mediaTable) return schema
+        mediaTable.columns.prefix = {
+          name: 'prefix',
+          type: 'varchar',
+        }
+        return schema
+      }
+    ],
+    /*afterSchemaInit: [
+      ({ schema, extendTable }) => {
+        extendTable({
+          table: schema.tables.media,
+          columns: {
+            prefix: varchar('prefix'),
+          }
+        })
+        return schema
+      }
+    ]*/
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections: [Pages, Posts, Media, Categories, Users, testimonials],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [
