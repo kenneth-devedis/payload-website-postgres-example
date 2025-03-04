@@ -78,6 +78,9 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "sharp"
-    ]
+    ],
+    "overrides": {
+      "uuid": "^11.0.0"
+    }
   }
 }

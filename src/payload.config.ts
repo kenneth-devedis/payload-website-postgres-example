@@ -24,6 +24,8 @@ import { sql } from '@payloadcms/db-postgres/drizzle'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+console.log('DATABASE_URL', process.env.DATABASE_URL)
+console.log('DATABASE_URI', process.env.DATABASE_URI)
 export default buildConfig({
   admin: {
     components: {
@@ -65,9 +67,8 @@ export default buildConfig({
   editor: defaultLexical,
   db: postgresAdapter({
     idType: 'uuid',
-    logger: true,
     pool: {
-      connectionString: process.env.DATABASE_URI || '',
+      connectionString: process.env.DATABASE_URL || '',
     },
     beforeSchemaInit: [
       ({schema, adapter}) => {

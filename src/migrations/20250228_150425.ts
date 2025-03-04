@@ -2,7 +2,7 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-    CREATE EXTENSION pg_uuidv7;
+    CREATE EXTENSION IF NOT EXISTS pg_uuidv7;
    CREATE TYPE "public"."enum_pages_hero_links_link_type" AS ENUM('reference', 'custom');
   CREATE TYPE "public"."enum_pages_hero_links_link_appearance" AS ENUM('default', 'outline');
   CREATE TYPE "public"."enum_pages_blocks_cta_links_link_type" AS ENUM('reference', 'custom');
